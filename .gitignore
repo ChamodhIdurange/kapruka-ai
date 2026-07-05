@@ -1,0 +1,18 @@
+# Dependencies & build output (client + server)
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+*.local
+
+# Secrets — never commit real keys
+**/.env
+!**/.env.example
+
+.DS_Store
+*.log
+
+# Design handoff bundle (reference only)
+*.zip
+*.zip:Zone.Identifier
