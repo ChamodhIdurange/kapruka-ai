@@ -45,17 +45,17 @@ export default function InputDock({ draft, suggestions, quickReplies, showChips,
             ))}
           </div>
         )}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 999, padding: 6, boxShadow: 'var(--shadow-sm)' }}>
+        <div className="kp-inputbar" style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 999, padding: 6, boxShadow: 'var(--shadow-sm)' }}>
           <Hov as="button" onClick={actions.openBrowse} title="Browse the shop"
             style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             hoverStyle={{ color: 'var(--primary)', borderColor: 'var(--soft-border)' }}>
             <Grid size={18} />
           </Hov>
-          <input value={draft}
+          <input value={draft} className="kp-bare"
             onChange={(e) => actions.setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); actions.onSend() } }}
             placeholder={t('askPlaceholder')}
-            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 15, color: 'var(--ink)', fontFamily: 'inherit', paddingLeft: 4 }} />
+            style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent', outline: 'none', fontSize: 15, color: 'var(--ink)', fontFamily: 'inherit', paddingLeft: 4 }} />
           <Hov as="button" onClick={actions.onSend}
             style={{ flex: 'none', width: 42, height: 42, borderRadius: '50%', border: 'none', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: 'var(--shadow-primary)' }}
             hoverStyle={{ filter: 'brightness(1.06)' }}>

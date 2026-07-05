@@ -298,6 +298,15 @@ function ReviewStep({ chat }: { chat: Chat }) {
       <div style={{ fontSize: 11.5, color: 'var(--muted-2)', marginTop: 4 }}>
         {t('deliveryFootnote', { rate: chat.dlCheck?.rateText ? `(${chat.dlCheck.rateText}) ` : '' })}
       </div>
+
+      {chat.orderError && (
+        <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start', background: 'rgba(220,53,69,.10)', border: '1px solid rgba(220,53,69,.35)', borderRadius: 11, padding: '11px 13px', marginTop: 14 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC3545" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: 1 }}>
+            <circle cx="12" cy="12" r="9" /><path d="M12 8v4" /><path d="M12 16h.01" />
+          </svg>
+          <div style={{ fontSize: 12.5, color: 'var(--ink)', lineHeight: 1.45 }}>{chat.orderError}</div>
+        </div>
+      )}
     </div>
   )
 }

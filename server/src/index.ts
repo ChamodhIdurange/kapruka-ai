@@ -125,7 +125,21 @@ app.post('/api/order', asyncRoute(async (req, res) => {
   }
   if (gift_message) args.gift_message = gift_message
   const raw = await callMcpTool('kapruka_create_order', args)
-  res.json(mapOrderResult(raw))
+  const result = mapOrderResult(raw)
+
+  // create_order may "succeed" as a tool call but return an error payload
+  // (e.g. city_not_deliverable, date_not_deliverable). Surface it as a 4xx so
+  // the client can show why, instead of a fake confirmation with no pay link.
+  if (!result.payUrl) {
+    const text = typeof (raw as { text?: string })?.text === 'string' ? (raw as { text: string }).text : ''
+    const m = /Error\s*\(([^)]+)\)\s*:?\s*(.*)/i.exec(text)
+    const message = m
+      ? (m[2]?.trim() || m[1].replace(/_/g, ' '))
+      : (text || 'Could not create the order. Please check the delivery city and date, then try again.')
+    res.status(422).json({ error: message, code: m?.[1] })
+    return
+  }
+  res.json(result)
 }))
 
 // ── Chat (SSE) ───────────────────────────────────────────

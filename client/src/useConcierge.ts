@@ -53,7 +53,7 @@ function makeChat(over: Partial<Chat>, uid: (p?: string) => string): Chat {
     giftTo: '', giftFrom: '', giftText: '', giftCard: 'floral',
     dlName: '', dlPhone: '', dlAddr: '', dlCity: '', dlDate: 'tomorrow', dlSlot: 'afternoon',
     dlCheck: null,
-    payMethod: 'card', order: null, placing: false, giftWrap: false,
+    payMethod: 'card', order: null, placing: false, orderError: null, giftWrap: false,
     track: null, trackQuery: '', trackError: null,
     ...over,
   }
@@ -329,7 +329,7 @@ export function useConcierge() {
   }, [patch])
   const goCheckoutStep = useCallback((step: 'gift' | 'delivery' | 'review') => {
     const id = stateRef.current.activeId
-    patch(id, { checkoutStep: step })
+    patch(id, { checkoutStep: step, orderError: null })
   }, [patch])
 
   const act = useCallback((a: ActionKey) => {
@@ -369,7 +369,7 @@ export function useConcierge() {
     const id = stateRef.current.activeId
     const c = stateRef.current.chats[id]
     if (!c || c.cart.length === 0) return
-    patch(id, { placing: true })
+    patch(id, { placing: true, orderError: null })
     try {
       const payload = {
         cart: c.cart.map((x) => ({ product_id: x.productId, quantity: x.qty })),
@@ -398,10 +398,10 @@ export function useConcierge() {
       patch(id, { order, checkoutStep: 'done', step: 'done', placing: false, cart: [], suggestions: [] })
       setState((s) => ({ ...s, cartOpen: true }))
     } catch (err) {
-      patch(id, { placing: false })
-      toast(err instanceof Error ? err.message : 'Could not place order')
+      // Keep the user on the review step and show why (bad city, full date, etc.).
+      patch(id, { placing: false, orderError: err instanceof Error ? err.message : 'Could not place order' })
     }
-  }, [patch, pushMsg, toast])
+  }, [patch, pushMsg])
 
   /* ── tracking ── */
   const setTrackQuery = useCallback((v: string) => {

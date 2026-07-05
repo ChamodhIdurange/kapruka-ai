@@ -125,6 +125,7 @@ export interface Chat {
   payMethod: PayMethod
   order: OrderInfo | null
   placing: boolean
+  orderError: string | null
   giftWrap: boolean
   track: TrackInfo | null
   trackQuery: string

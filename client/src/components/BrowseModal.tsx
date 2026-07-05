@@ -97,9 +97,9 @@ export default function BrowseModal({ chat, query, cat, price, sort, favorites, 
               <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.01em' }}>{t('browseTheShop')}</span>
             </div>
           )}
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 9, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 999, padding: '9px 16px', maxWidth: isMobile ? undefined : 420, margin: isMobile ? 0 : '0 auto' }}>
+          <div className="kp-inputbar" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 9, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 999, padding: '9px 16px', maxWidth: isMobile ? undefined : 420, margin: isMobile ? 0 : '0 auto' }}>
             <Search size={17} stroke="var(--muted)" />
-            <input value={query} onChange={(e) => actions.setBrowseQuery(e.target.value)} placeholder={t('searchPlaceholder')}
+            <input value={query} className="kp-bare" onChange={(e) => actions.setBrowseQuery(e.target.value)} placeholder={t('searchPlaceholder')}
               style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent', outline: 'none', fontSize: 14, color: 'var(--ink)', fontFamily: 'inherit' }} />
           </div>
           <Hov as="button" onClick={actions.closeBrowse}
