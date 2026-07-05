@@ -19,21 +19,34 @@ interface Props {
   expanded: boolean
   editingId: string | null
   editTitle: string
+  isMobile?: boolean
   actions: ConciergeActions
 }
 
-export default function Sidebar({ chats, activeId, expanded, editingId, editTitle, actions }: Props) {
+export default function Sidebar({ chats, activeId, expanded, editingId, editTitle, isMobile, actions }: Props) {
   const t = useT()
+
+  // On mobile the sidebar is an overlay drawer opened from the header; when
+  // collapsed it takes no space at all.
+  if (isMobile && !expanded) return null
+
+  // Selecting/creating a chat should dismiss the drawer on mobile.
+  const selectChat = (id: string) => { actions.selectChat(id); if (isMobile) actions.collapseSidebar() }
+  const newChat = () => { actions.newChat(); if (isMobile) actions.collapseSidebar() }
+
   if (expanded) {
-    return (
-      <div data-screen-label="Chat sidebar" style={{ flex: 'none', width: 268, background: 'var(--surface)', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+    const panelStyle: React.CSSProperties = isMobile
+      ? { position: 'fixed', top: 0, left: 0, bottom: 0, width: 'min(300px,84vw)', zIndex: 91, background: 'var(--surface)', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', minHeight: 0, boxShadow: 'var(--shadow-lg)', animation: 'kpDrawer .28s cubic-bezier(.2,.7,.2,1) both' }
+      : { flex: 'none', width: 268, background: 'var(--surface)', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', minHeight: 0 }
+    const panel = (
+      <div data-screen-label="Chat sidebar" style={panelStyle}>
         {/* brand + collapse */}
         <div style={{ flex: 'none', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 0 18px', borderBottom: '1px solid var(--line-2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ flex: 'none', width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Sprout size={18} stroke="#fff" />
             </div>
-            <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.02em' }}>kapruka</span>
+            <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.02em' }}>Kapruka AI</span>
           </div>
           <Hov as="button" onClick={actions.collapseSidebar} title="Collapse"
             style={{ flex: 'none', width: 30, height: 30, borderRadius: 8, border: 'none', background: 'var(--surface-2)', color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
@@ -44,7 +57,7 @@ export default function Sidebar({ chats, activeId, expanded, editingId, editTitl
 
         {/* new chat */}
         <div style={{ flex: 'none', padding: '14px 14px 10px' }}>
-          <Hov as="button" onClick={actions.newChat}
+          <Hov as="button" onClick={newChat}
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--primary)', color: 'var(--on-primary)', border: 'none', borderRadius: 11, padding: '11px 0', fontSize: 13.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
             hoverStyle={{ background: 'var(--primary-hover)' }}>
             <Plus size={16} />{t('newChat')}
@@ -60,14 +73,14 @@ export default function Sidebar({ chats, activeId, expanded, editingId, editTitl
               <Hov key={ch.id}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, background: active ? 'var(--soft)' : 'transparent', borderRadius: 11, padding: '10px 11px', marginBottom: 3 }}
                 hoverStyle={{ background: 'var(--surface-2)' }}>
-                <div onClick={() => actions.selectChat(ch.id)} style={{ flex: 'none', width: 34, height: 34, borderRadius: 9, background: TONES[ch.tone || 0], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <div onClick={() => selectChat(ch.id)} style={{ flex: 'none', width: 34, height: 34, borderRadius: 9, background: TONES[ch.tone || 0], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                   <ChatBubble size={17} stroke="#fff" />
                 </div>
                 {ch.id === editingId ? (
                   <RenameInput value={editTitle} actions={actions} />
                 ) : (
                   <>
-                    <div onClick={() => actions.selectChat(ch.id)} style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}>
+                    <div onClick={() => selectChat(ch.id)} style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}>
                       <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ch.title}</div>
                       <div style={{ fontSize: 11.5, color: 'var(--muted-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{chatStatus(ch, t)}</div>
                     </div>
@@ -101,6 +114,16 @@ export default function Sidebar({ chats, activeId, expanded, editingId, editTitl
         </div>
       </div>
     )
+
+    if (isMobile) {
+      return (
+        <>
+          <div onClick={actions.collapseSidebar} className="kp-glass" style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'var(--scrim)', animation: 'kpIn .2s ease both' }} />
+          {panel}
+        </>
+      )
+    }
+    return panel
   }
 
   // ── collapsed rail ──

@@ -1,4 +1,5 @@
 import { useConcierge } from './useConcierge'
+import { useIsMobile } from './useIsMobile'
 import { pricing } from './derive'
 import { LangContext } from './i18n'
 import Sidebar from './components/Sidebar'
@@ -9,10 +10,12 @@ import InputDock from './components/InputDock'
 import RightPanel from './components/RightPanel'
 import BrowseModal from './components/BrowseModal'
 import CheckoutModal from './components/CheckoutModal'
+import WelcomeModal from './components/WelcomeModal'
 import Toast from './components/Toast'
 
 export default function App() {
   const { state, actions, messagesRef } = useConcierge()
+  const isMobile = useIsMobile()
   const chat = state.chats[state.activeId]
   const { itemsCount } = pricing(chat.cart)
   const chats = state.chatOrder.map((id) => state.chats[id]).filter(Boolean)
@@ -31,11 +34,12 @@ export default function App() {
         expanded={state.sidebarExpanded}
         editingId={state.editingId}
         editTitle={state.editTitle}
+        isMobile={isMobile}
         actions={actions}
       />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
-        <Header lang={state.lang} theme={state.theme} cartCount={itemsCount} actions={actions} />
+        <Header lang={state.lang} theme={state.theme} cartCount={itemsCount} isMobile={isMobile} actions={actions} />
 
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'var(--surface-3)' }}>
@@ -54,7 +58,7 @@ export default function App() {
           </div>
 
           {state.cartOpen && (
-            <RightPanel chat={chat} activeTab={state.activeTab} saved={saved} actions={actions} />
+            <RightPanel chat={chat} activeTab={state.activeTab} saved={saved} isMobile={isMobile} actions={actions} />
           )}
         </div>
       </div>
@@ -73,6 +77,7 @@ export default function App() {
 
       {chat.checkoutStep && <CheckoutModal chat={chat} actions={actions} />}
 
+      <WelcomeModal />
       <Toast text={state.toast} />
     </div>
     </LangContext.Provider>

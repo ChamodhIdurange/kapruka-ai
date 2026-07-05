@@ -1,6 +1,7 @@
 import type { RefObject } from 'react'
 import type { ConciergeActions } from '../useConcierge'
 import type { Chat } from '../types'
+import { useIsMobile } from '../useIsMobile'
 import Message from './Message'
 import { Sprout } from '../icons'
 
@@ -12,10 +13,11 @@ interface Props {
 }
 
 export default function Transcript({ chat, favorites, messagesRef, actions }: Props) {
+  const isMobile = useIsMobile()
   const cartQty: Record<string, number> = {}
   for (const x of chat.cart) cartQty[x.id] = x.qty
   return (
-    <div ref={messagesRef} className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '28px 28px 8px' }}>
+    <div ref={messagesRef} className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '18px 14px 8px' : '28px 28px 8px' }}>
       <div style={{ maxWidth: 780, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
         {chat.messages.map((m) => (
           <Message key={m.id} m={m} favorites={favorites} cartQty={cartQty} actions={actions} />

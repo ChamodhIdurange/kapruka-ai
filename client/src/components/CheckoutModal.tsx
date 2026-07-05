@@ -5,6 +5,7 @@ import { apiGet, type CitiesResponse } from '../api'
 import { formatPrice, pricing, deliveryDateISO } from '../derive'
 import { tileBg } from '../catalog'
 import { useT, type TKey } from '../i18n'
+import { useIsMobile } from '../useIsMobile'
 import Hov from '../Hov'
 import { CheckLg, Clock, Close, GiftBox, GiftBoxFlat, Pin, ClipboardCheck } from '../icons'
 
@@ -24,15 +25,16 @@ const sectionLabel: React.CSSProperties = {
 
 export default function CheckoutModal({ chat, actions }: { chat: Chat; actions: ConciergeActions }) {
   const t = useT()
+  const isMobile = useIsMobile()
   const step = chat.checkoutStep as CheckoutStep
   const { totalText } = pricing(chat.cart)
   const stepIndex = STEPS.findIndex((s) => s.key === step)
 
   return (
     <div onClick={actions.closeCheckout} className="kp-glass"
-      style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, animation: 'kpIn .2s ease both' }}>
+      style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--scrim)', display: 'flex', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'center', padding: isMobile ? 0 : 24, animation: 'kpIn .2s ease both' }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ width: 'min(560px,96vw)', maxHeight: 'min(90vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
+        style={{ width: isMobile ? '100vw' : 'min(560px,96vw)', maxHeight: isMobile ? '100vh' : 'min(90vh,760px)', height: isMobile ? '100vh' : undefined, background: 'var(--surface)', border: isMobile ? 'none' : '1px solid var(--line)', borderRadius: isMobile ? 0 : 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
 
         {/* header */}
         <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 12, padding: '18px 20px 16px', borderBottom: '1px solid var(--line-2)' }}>

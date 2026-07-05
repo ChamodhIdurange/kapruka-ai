@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { ConciergeActions } from '../useConcierge'
 import { useT } from '../i18n'
+import { useIsMobile } from '../useIsMobile'
 import Hov from '../Hov'
 import { Cake, Flower, GiftBoxFlat, Spark4, Sprout, Wand } from '../icons'
 
@@ -19,6 +20,7 @@ function renderTitle(tpl: string): ReactNode {
 
 export default function Hero({ actions }: { actions: ConciergeActions }) {
   const t = useT()
+  const isMobile = useIsMobile()
   const chip = (onClick: () => void, icon: React.ReactNode, label: string) => (
     <Hov as="button" onClick={onClick}
       style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--surface)', border: '1px solid var(--line)', color: 'var(--ink)', borderRadius: 999, padding: '10px 16px', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
@@ -28,22 +30,22 @@ export default function Hero({ actions }: { actions: ConciergeActions }) {
   )
 
   return (
-    <div className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 28px' }}>
+    <div className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '28px 18px' : '40px 28px' }}>
       <div style={{ position: 'absolute', top: '14%', left: '50%', transform: 'translateX(-50%)', width: '88%', maxWidth: 520, height: 340, background: 'var(--hero-glow)', filter: 'blur(8px)', animation: 'kpGlow 6s ease-in-out infinite', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: '18%', left: '14%', width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(34,197,140,.28), transparent)', filter: 'blur(30px)', animation: 'kpBlob1 11s ease-in-out infinite', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '14%', right: '12%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(228,178,62,.26), transparent)', filter: 'blur(32px)', animation: 'kpBlob2 13s ease-in-out infinite', pointerEvents: 'none' }} />
       <div style={{ position: 'relative', maxWidth: 680, width: '100%', textAlign: 'center' }}>
-        <div style={{ width: 78, height: 78, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 26px', boxShadow: 'var(--shadow-primary)', animation: 'kpFloat 5s ease-in-out infinite' }}>
-          <Sprout size={38} stroke="#fff" />
+        <div style={{ width: isMobile ? 62 : 78, height: isMobile ? 62 : 78, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: isMobile ? '0 auto 20px' : '0 auto 26px', boxShadow: 'var(--shadow-primary)', animation: 'kpFloat 5s ease-in-out infinite' }}>
+          <Sprout size={isMobile ? 30 : 38} stroke="#fff" />
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--ink-2)', marginBottom: 14 }}>
           <Spark4 size={14} fill="var(--star)" />
           {t('heroBadge')}
         </div>
-        <h1 style={{ margin: '0 0 16px', fontSize: 42, lineHeight: 1.1, fontWeight: 800, letterSpacing: '-.03em', color: 'var(--ink)' }}>
+        <h1 style={{ margin: '0 0 16px', fontSize: isMobile ? 29 : 42, lineHeight: 1.12, fontWeight: 800, letterSpacing: '-.03em', color: 'var(--ink)' }}>
           {renderTitle(t('heroTitle'))}
         </h1>
-        <p style={{ margin: '0 auto 28px', maxWidth: 520, fontSize: 16, lineHeight: 1.6, color: 'var(--muted)' }}>
+        <p style={{ margin: isMobile ? '0 auto 22px' : '0 auto 28px', maxWidth: 520, fontSize: isMobile ? 14.5 : 16, lineHeight: 1.6, color: 'var(--muted)' }}>
           {t('heroSub')}
         </p>
         <Hov as="button" onClick={() => actions.heroSend('Help me choose a gift — what do you need to know?')}

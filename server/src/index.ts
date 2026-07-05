@@ -148,7 +148,14 @@ app.post('/api/chat', asyncRoute(async (req, res) => {
     await runAgent(history, send, language)
     send({ type: 'done' })
   } catch (err) {
-    send({ type: 'error', message: err instanceof Error ? err.message : String(err) })
+    const status = (err as { status?: number })?.status
+    const message =
+      status === 429
+        ? "KAI is getting a lot of requests right now (AI rate limit). Please wait a few seconds and try again."
+        : status === 401 || status === 403
+          ? 'The AI service rejected the request — check GOOGLE_API_KEY in server/.env.'
+          : err instanceof Error ? err.message : String(err)
+    send({ type: 'error', message })
   } finally {
     res.end()
   }

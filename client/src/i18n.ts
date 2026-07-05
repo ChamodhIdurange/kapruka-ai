@@ -143,6 +143,11 @@ const en = {
   toastRemovedWish: 'Removed from wishlist',
   toastChatDeleted: 'Chat deleted',
   toastBasketEmpty: 'Your basket is empty — add a gift first.',
+  // welcome / demo notice
+  noticeTitle: 'Demo mode · free AI key',
+  noticeBody: "KAI's chat runs on a free Google AI Studio API key, so you may occasionally see a rate-limit notice (“KAI is busy” / 429). If that happens, wait a few seconds and try again. Everything else — live products, prices, delivery and checkout — is real Kapruka data.",
+  noticeGotIt: 'Got it',
+  noticeDontShow: "Don't show this again",
 }
 
 export type TKey = keyof typeof en
@@ -276,6 +281,10 @@ const si: Partial<Record<TKey, string>> = {
   toastRemovedWish: 'ආශා ලැයිස්තුවෙන් ඉවත් කළා',
   toastChatDeleted: 'සංවාදය මැකුවා',
   toastBasketEmpty: 'ඔබේ කූඩය හිස් — මුලින් තෑග්ගක් එක් කරන්න.',
+  noticeTitle: 'ආදර්ශන ප්‍රකාරය · නොමිලේ AI යතුර',
+  noticeBody: 'KAI හි සංවාදය නොමිලේ Google AI Studio API යතුරක් මත ක්‍රියාත්මක වේ, එබැවින් ඔබට ඉඳහිට අනුපාත සීමා දැනුම්දීමක් (“KAI කාර්යබහුලයි” / 429) දැකිය හැක. එවිට තත්පර කිහිපයක් රැඳී නැවත උත්සාහ කරන්න. අනෙක් සියල්ල — සජීවී නිෂ්පාදන, මිල, බෙදාහැරීම සහ ගෙවීම — සැබෑ Kapruka දත්තය.',
+  noticeGotIt: 'තේරුණා',
+  noticeDontShow: 'නැවත මෙය නොපෙන්වන්න',
 }
 
 const ta: Partial<Record<TKey, string>> = {
@@ -407,6 +416,10 @@ const ta: Partial<Record<TKey, string>> = {
   toastRemovedWish: 'விருப்பப்பட்டியலிலிருந்து அகற்றப்பட்டது',
   toastChatDeleted: 'அரட்டை நீக்கப்பட்டது',
   toastBasketEmpty: 'உங்கள் கூடை காலி — முதலில் ஒரு பரிசைச் சேர்க்கவும்.',
+  noticeTitle: 'டெமோ பயன்முறை · இலவச AI விசை',
+  noticeBody: 'KAI இன் அரட்டை ஒரு இலவச Google AI Studio API விசையில் இயங்குகிறது, எனவே அவ்வப்போது வரம்பு அறிவிப்பு (“KAI பிஸியாக உள்ளது” / 429) தோன்றலாம். அப்படி நடந்தால், சில வினாடிகள் காத்திருந்து மீண்டும் முயற்சிக்கவும். மற்ற அனைத்தும் — நேரடி பொருட்கள், விலைகள், டெலிவரி மற்றும் செக்அவுட் — உண்மையான Kapruka தரவு.',
+  noticeGotIt: 'சரி',
+  noticeDontShow: 'இதை மீண்டும் காட்ட வேண்டாம்',
 }
 
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { en, si, ta }

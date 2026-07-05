@@ -64,6 +64,8 @@ export function useConcierge() {
   if (!init.current) {
     const ctr = makeCounter(100)
     const first = makeChat({ title: 'New gift' }, ctr.uid)
+    // On phones the sidebar + basket are overlays, so they start closed.
+    const isMobileInit = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
     init.current = {
       start: ctr.value(),
       state: {
@@ -74,8 +76,8 @@ export function useConcierge() {
         savedMap: {},
         activeTab: 'basket',
         draft: '',
-        sidebarExpanded: true,
-        cartOpen: true,
+        sidebarExpanded: !isMobileInit,
+        cartOpen: !isMobileInit,
         theme: 'light',
         lang: 'en',
         toast: '',

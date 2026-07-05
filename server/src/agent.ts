@@ -1,9 +1,9 @@
-import { AzureOpenAI } from 'openai'
+import OpenAI from 'openai'
 import type {
   ChatCompletionMessageParam,
   ChatCompletionMessageToolCall,
 } from 'openai/resources/index'
-import { config, assertAzureConfigured } from './config.js'
+import { config, assertGoogleConfigured } from './config.js'
 import { buildAgentTools, dispatchTool, friendlyToolLabel } from './tools.js'
 import type { ChatEvent, ChatMessage } from './types.js'
 
@@ -25,18 +25,21 @@ How to respond:
 - You cannot place orders or take payment — those happen in the basket/checkout panel. If asked to buy or pay, warmly point them to add items to the basket and check out there.
 - Default currency is ${config.defaultCurrency}. Be specific to Sri Lanka and keep it delightful.`
 
-let azureClient: AzureOpenAI | null = null
-function getClient(): AzureOpenAI {
-  assertAzureConfigured()
-  if (!azureClient) {
-    azureClient = new AzureOpenAI({
-      endpoint: config.azure.endpoint,
-      apiKey: config.azure.apiKey,
-      apiVersion: config.azure.apiVersion,
-      deployment: config.azure.deployment,
+let llmClient: OpenAI | null = null
+function getClient(): OpenAI {
+  assertGoogleConfigured()
+  if (!llmClient) {
+    // Google AI Studio (Gemini) is OpenAI-compatible — reuse the OpenAI SDK
+    // pointed at Google's OpenAI-compatibility base URL.
+    llmClient = new OpenAI({
+      apiKey: config.google.apiKey,
+      baseURL: config.google.baseUrl,
+      // The free Gemini tier has low RPM/TPM quotas and each turn makes several
+      // calls; let the SDK ride out transient 429s with exponential backoff.
+      maxRetries: 4,
     })
   }
-  return azureClient
+  return llmClient
 }
 
 const MAX_ITERATIONS = 8
@@ -64,9 +67,24 @@ export async function runAgent(
     ...history.map((m) => ({ role: m.role, content: m.content }) as ChatCompletionMessageParam),
   ]
 
+  // Some models (e.g. Gemini via the OpenAI-compat layer) repeat the same
+  // preamble text before AND after a tool call. Buffer each turn's text and
+  // emit it as one deduped block so the user never sees doubled sentences.
+  const seenText = new Set<string>()
+  let anyTextEmitted = false
+  const flushText = (raw: string) => {
+    const text = raw.trim()
+    if (!text) return
+    const key = text.replace(/\s+/g, ' ')
+    if (seenText.has(key)) return
+    seenText.add(key)
+    emit({ type: 'text', delta: (anyTextEmitted ? '\n\n' : '') + text })
+    anyTextEmitted = true
+  }
+
   for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
     const stream = await client.chat.completions.create({
-      model: config.azure.deployment,
+      model: config.google.model,
       messages,
       tools,
       tool_choice: 'auto',
@@ -79,10 +97,7 @@ export async function runAgent(
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta
       if (!delta) continue
-      if (delta.content) {
-        textBuf += delta.content
-        emit({ type: 'text', delta: delta.content })
-      }
+      if (delta.content) textBuf += delta.content
       for (const tc of delta.tool_calls ?? []) {
         const idx = tc.index ?? 0
         const acc = (toolAcc[idx] ??= { id: '', name: '', args: '' })
@@ -91,6 +106,8 @@ export async function runAgent(
         if (tc.function?.arguments) acc.args += tc.function.arguments
       }
     }
+
+    flushText(textBuf)
 
     const calls = Object.values(toolAcc).filter((c) => c.name)
     if (calls.length === 0) {

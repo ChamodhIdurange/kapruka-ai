@@ -1,6 +1,7 @@
 import type { ConciergeActions } from '../useConcierge'
 import type { Suggestion } from '../types'
 import { useT } from '../i18n'
+import { useIsMobile } from '../useIsMobile'
 import Hov from '../Hov'
 import { Grid, Send } from '../icons'
 
@@ -14,12 +15,13 @@ interface Props {
 
 export default function InputDock({ draft, suggestions, quickReplies, showChips, actions }: Props) {
   const t = useT()
+  const isMobile = useIsMobile()
   const label = (s: Suggestion) =>
     s.action === 'open-composer' ? t('sgAddGiftCard')
     : s.action === 'checkout' ? t('sgProceedCheckout')
     : s.label
   return (
-    <div className="kp-glass" style={{ flex: 'none', borderTop: '1px solid var(--line)', background: 'var(--glass-bg)', padding: '14px 28px 18px' }}>
+    <div className="kp-glass" style={{ flex: 'none', borderTop: '1px solid var(--line)', background: 'var(--glass-bg)', padding: isMobile ? '10px 12px 14px' : '14px 28px 18px' }}>
       <div style={{ maxWidth: 780, margin: '0 auto' }}>
         {quickReplies.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>

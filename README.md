@@ -1,26 +1,26 @@
 # Kapruka AI Concierge (KAI)
 
 A real, AI-driven shopping concierge for **Kapruka** (Sri Lanka's largest gift-delivery
-service). The chat is powered by **Azure OpenAI (GPT‑5.2)** and grounded in live data
-from the **Kapruka MCP server** (`https://mcp.kapruka.com/mcp`) — real products, images,
-prices, delivery cities, guest checkout, and order tracking.
+service). The chat is powered by **Google AI Studio (Gemini)** via its OpenAI-compatible
+API, and grounded in live data from the **Kapruka MCP server** (`https://mcp.kapruka.com/mcp`)
+— real products, images, prices, delivery cities, guest checkout, and order tracking.
 
 This is a small monorepo:
 
 ```
 client/   React + Vite + TypeScript UI (the KAI concierge screen)
-server/   Node + Express backend: MCP broker + Azure OpenAI agent loop
+server/   Node + Express backend: MCP broker + Gemini agent loop
 ```
 
 ## How it works
 
 ```
- Browser (client)  ──HTTP/SSE──▶  server  ──tool calls──▶  Azure OpenAI (GPT‑5.2)
+ Browser (client)  ──HTTP/SSE──▶  server  ──tool calls──▶  Google AI Studio (Gemini)
                                      │
                                      └──MCP (StreamableHTTP)──▶  Kapruka MCP server
 ```
 
-- **Chat** (`POST /api/chat`, SSE): the server runs a GPT‑5.2 tool-calling loop. The
+- **Chat** (`POST /api/chat`, SSE): the server runs a Gemini tool-calling loop. The
   model calls the Kapruka MCP tools (`search_products`, `get_product`,
   `list_categories`, `list_delivery_cities`, `check_delivery`, `track_order`) and the
   server streams text + rich product cards back to the UI.
@@ -35,7 +35,7 @@ server/   Node + Express backend: MCP broker + Azure OpenAI agent loop
 ## Prerequisites
 
 - Node 18+
-- An Azure OpenAI resource with a **GPT‑5.2 deployment** (for the chat agent).
+- A **Google AI Studio API key** (for the chat agent) — get one at https://aistudio.google.com/apikey.
   The MCP server is a public free tier and needs no credentials.
 
 ## Setup & run
@@ -45,7 +45,7 @@ server/   Node + Express backend: MCP broker + Azure OpenAI agent loop
 ```bash
 cd server
 npm install
-cp .env.example .env      # then fill in your Azure OpenAI values
+cp .env.example .env      # then paste your Google AI Studio API key
 npm run dev               # http://localhost:8787
 ```
 
@@ -54,14 +54,13 @@ npm run dev               # http://localhost:8787
 ```
 PORT=8787
 KAPRUKA_MCP_URL=https://mcp.kapruka.com/mcp
-AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com
-AZURE_OPENAI_API_KEY=<your-key>
-AZURE_OPENAI_DEPLOYMENT=gpt-5.2          # your deployment name
-AZURE_OPENAI_API_VERSION=2024-10-21
+GOOGLE_API_KEY=<your-google-ai-studio-key>
+GOOGLE_MODEL=gemini-2.5-flash             # any Gemini function-calling model
+GOOGLE_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 DEFAULT_CURRENCY=USD
 ```
 
-Sanity-check the MCP connection (no Azure key needed):
+Sanity-check the MCP connection (no Google key needed):
 
 ```bash
 npm run probe
@@ -89,8 +88,8 @@ npm run dev               # http://localhost:5173
 
 ## Notes
 
-- Chat requires valid Azure OpenAI credentials in `server/.env`; the REST/browse
-  endpoints work without them.
+- Chat requires a valid `GOOGLE_API_KEY` in `server/.env`; the REST/browse
+  endpoints work without it.
 - Prices are shown in the configured display currency (default USD). Kapruka adds the
   delivery charge (LKR) at payment.
 - The original Claude Design handoff bundle is kept under `kapruka-handoff/` for reference.

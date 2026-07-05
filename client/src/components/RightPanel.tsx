@@ -10,6 +10,7 @@ interface Props {
   chat: Chat
   activeTab: Tab
   saved: Product[]
+  isMobile?: boolean
   actions: ConciergeActions
 }
 
@@ -21,14 +22,18 @@ function Thumb({ imageUrl, id, size, radius }: { imageUrl: string | null; id: st
   )
 }
 
-export default function RightPanel({ chat, activeTab, saved, actions }: Props) {
+export default function RightPanel({ chat, activeTab, saved, isMobile, actions }: Props) {
   const t = useT()
   const isTracking = chat.step === 'done'
   const { totalText, itemsCount } = pricing(chat.cart)
   const hasItems = chat.cart.length > 0
 
-  return (
-    <div style={{ flex: 'none', width: 384, borderLeft: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+  const panelStyle: React.CSSProperties = isMobile
+    ? { position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(420px,100vw)', zIndex: 91, borderLeft: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', flexDirection: 'column', minHeight: 0, boxShadow: 'var(--shadow-lg)', animation: 'kpDrawerR .28s cubic-bezier(.2,.7,.2,1) both' }
+    : { flex: 'none', width: 384, borderLeft: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', flexDirection: 'column', minHeight: 0 }
+
+  const panel = (
+    <div style={panelStyle}>
       <div style={{ flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 14px 0 18px' }}>
         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--muted-2)' }}>{t('thisGift')}</span>
         <Hov as="button" onClick={actions.toggleCart} title="Hide basket"
@@ -155,6 +160,16 @@ export default function RightPanel({ chat, activeTab, saved, actions }: Props) {
       )}
     </div>
   )
+
+  if (isMobile) {
+    return (
+      <>
+        <div onClick={actions.toggleCart} className="kp-glass" style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'var(--scrim)', animation: 'kpIn .2s ease both' }} />
+        {panel}
+      </>
+    )
+  }
+  return panel
 }
 
 function Tracking({ chat, actions }: { chat: Chat; actions: ConciergeActions }) {

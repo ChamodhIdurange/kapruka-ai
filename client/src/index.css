@@ -69,6 +69,8 @@ body {
 @keyframes kpShimmer { 0% { background-position: 0% 50% } 100% { background-position: 200% 50% } }
 @keyframes kpBlob1 { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(24px,-18px) scale(1.08) } }
 @keyframes kpBlob2 { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(-26px,20px) scale(1.1) } }
+@keyframes kpDrawer { from { transform: translateX(-100%) } to { transform: none } }
+@keyframes kpDrawerR { from { transform: translateX(100%) } to { transform: none } }
 
 /* ── GLASSMORPHISM ──────────────────────────────────────────── */
 .kp-glass {

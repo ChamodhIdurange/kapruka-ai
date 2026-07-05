@@ -3,6 +3,7 @@ import type { ConciergeActions } from '../useConcierge'
 import type { BrowseCat, BrowsePrice, BrowseSort, Chat, Product } from '../types'
 import { apiGet, type CategoriesResponse, type SearchResponse } from '../api'
 import { useT } from '../i18n'
+import { useIsMobile } from '../useIsMobile'
 import ProductImage from './ProductImage'
 import Hov from '../Hov'
 import { Close, Grid, Heart, Search, Star5 } from '../icons'
@@ -26,6 +27,7 @@ const PRICE_PARAMS: Record<BrowsePrice, { min?: number; max?: number }> = {
 
 export default function BrowseModal({ chat, query, cat, price, sort, favorites, actions }: Props) {
   const t = useT()
+  const isMobile = useIsMobile()
   const cartIds = new Set(chat.cart.map((x) => x.id))
   const [categories, setCategories] = useState<string[]>([])
   const [results, setResults] = useState<Product[]>([])
@@ -75,23 +77,30 @@ export default function BrowseModal({ chat, query, cat, price, sort, favorites, 
 
   const priceChip = (k: BrowsePrice, label: string) => (
     <button type="button" onClick={() => actions.setBrowsePrice(k)}
-      style={{ background: pBg(k), border: '1px solid var(--line)', color: 'var(--ink)', borderRadius: 999, padding: '7px 12px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>{label}</button>
+      style={{ flex: 'none', background: pBg(k), border: '1px solid var(--line)', color: 'var(--ink)', borderRadius: 999, padding: '7px 12px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>{label}</button>
+  )
+
+  const catChip = (k: BrowseCat, label: string) => (
+    <button key={String(k)} type="button" onClick={() => actions.setBrowseCat(k)}
+      style={{ flex: 'none', background: cat === k ? 'var(--primary)' : 'var(--surface-2)', border: '1px solid var(--line)', color: cat === k ? 'var(--on-primary)' : 'var(--ink)', borderRadius: 999, padding: '7px 13px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>{label}</button>
   )
 
   return (
-    <div onClick={actions.closeBrowse} className="kp-glass" style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'var(--scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28, animation: 'kpIn .2s ease both' }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(1060px,96vw)', height: 'min(86vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
-        <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 14, padding: '15px 18px', borderBottom: '1px solid var(--line-2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
-            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Grid size={18} stroke="#fff" />
+    <div onClick={actions.closeBrowse} className="kp-glass" style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'var(--scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? 0 : 28, animation: 'kpIn .2s ease both' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: isMobile ? '100vw' : 'min(1060px,96vw)', height: isMobile ? '100vh' : 'min(86vh,760px)', background: 'var(--surface)', border: isMobile ? 'none' : '1px solid var(--line)', borderRadius: isMobile ? 0 : 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
+        <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 14, padding: isMobile ? '12px 12px' : '15px 18px', borderBottom: '1px solid var(--line-2)' }}>
+          {!isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Grid size={18} stroke="#fff" />
+              </div>
+              <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.01em' }}>{t('browseTheShop')}</span>
             </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.01em' }}>{t('browseTheShop')}</span>
-          </div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 9, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 999, padding: '9px 16px', maxWidth: 420, margin: '0 auto' }}>
+          )}
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 9, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 999, padding: '9px 16px', maxWidth: isMobile ? undefined : 420, margin: isMobile ? 0 : '0 auto' }}>
             <Search size={17} stroke="var(--muted)" />
             <input value={query} onChange={(e) => actions.setBrowseQuery(e.target.value)} placeholder={t('searchPlaceholder')}
-              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 14, color: 'var(--ink)', fontFamily: 'inherit' }} />
+              style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent', outline: 'none', fontSize: 14, color: 'var(--ink)', fontFamily: 'inherit' }} />
           </div>
           <Hov as="button" onClick={actions.closeBrowse}
             style={{ flex: 'none', width: 36, height: 36, borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface-2)', color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
@@ -100,22 +109,39 @@ export default function BrowseModal({ chat, query, cat, price, sort, favorites, 
           </Hov>
         </div>
 
-        <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-          <div className="kp-scroll" style={{ flex: 'none', width: 212, borderRight: '1px solid var(--line-2)', padding: '16px 12px', overflowY: 'auto' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--muted-2)', padding: '0 8px 8px' }}>{t('categories')}</div>
-            {catRow('all', <Grid size={16} stroke="var(--muted)" strokeWidth={1.7} />, t('allGifts'))}
-            {categories.map((name) => catRow(name, <Grid size={16} stroke="var(--muted)" strokeWidth={1.5} />, name))}
-            <div style={{ height: 1, background: 'var(--line-2)', margin: '14px 6px' }} />
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--muted-2)', padding: '0 8px 8px' }}>{t('priceUSD')}</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, padding: '0 4px' }}>
-              {priceChip('any', t('pAny'))}
-              {priceChip('lt20', t('pUnder20'))}
-              {priceChip('mid', t('pMid'))}
-              {priceChip('gt40', t('pOver40'))}
+        <div style={{ flex: 1, display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: 0 }}>
+          {!isMobile && (
+            <div className="kp-scroll" style={{ flex: 'none', width: 212, borderRight: '1px solid var(--line-2)', padding: '16px 12px', overflowY: 'auto' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--muted-2)', padding: '0 8px 8px' }}>{t('categories')}</div>
+              {catRow('all', <Grid size={16} stroke="var(--muted)" strokeWidth={1.7} />, t('allGifts'))}
+              {categories.map((name) => catRow(name, <Grid size={16} stroke="var(--muted)" strokeWidth={1.5} />, name))}
+              <div style={{ height: 1, background: 'var(--line-2)', margin: '14px 6px' }} />
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--muted-2)', padding: '0 8px 8px' }}>{t('priceUSD')}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, padding: '0 4px' }}>
+                {priceChip('any', t('pAny'))}
+                {priceChip('lt20', t('pUnder20'))}
+                {priceChip('mid', t('pMid'))}
+                {priceChip('gt40', t('pOver40'))}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '18px 20px', minWidth: 0 }}>
+          {isMobile && (
+            <div style={{ flex: 'none', borderBottom: '1px solid var(--line-2)', padding: '10px 0 12px' }}>
+              <div className="kp-carousel" style={{ display: 'flex', gap: 7, overflowX: 'auto', padding: '0 12px 8px' }}>
+                {catChip('all', t('allGifts'))}
+                {categories.map((name) => catChip(name, name))}
+              </div>
+              <div style={{ display: 'flex', gap: 7, overflowX: 'auto', padding: '0 12px' }} className="kp-carousel">
+                {priceChip('any', t('pAny'))}
+                {priceChip('lt20', t('pUnder20'))}
+                {priceChip('mid', t('pMid'))}
+                {priceChip('gt40', t('pOver40'))}
+              </div>
+            </div>
+          )}
+
+          <div className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '14px 12px' : '18px 20px', minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{loading ? t('searchingDots') : t('results', { n: results.length })}</span>
               <select value={sort} onChange={(e) => actions.setBrowseSort(e.target.value as BrowseSort)}
@@ -127,7 +153,7 @@ export default function BrowseModal({ chat, query, cat, price, sort, favorites, 
               </select>
             </div>
             {results.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(184px,1fr))', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fill,minmax(184px,1fr))', gap: isMobile ? 10 : 14 }}>
                 {results.map((p) => (
                   <BrowseCard key={p.id} p={p} isFav={favorites.includes(p.id)} inCart={cartIds.has(p.id)}
                     onAdd={() => actions.addToCart(p)} onFav={() => actions.toggleFav(p)} />
