@@ -51,9 +51,14 @@ const MAX_ITERATIONS = 8
 const PRIMARY_COOLDOWN_MS = 20 * 60_000
 let primaryCooldownUntil = 0
 
+// Statuses that mean "try the other model": rate limit (429) or transient
+// unavailability/overload from the provider (500/502/503/529).
+const FALLBACKABLE = new Set([429, 500, 502, 503, 529])
+
 /**
  * Open a streaming chat completion, trying the primary model first and
- * automatically falling back to the lighter model on a 429 (rate limit).
+ * automatically falling back to the lighter model when the primary is
+ * rate-limited (429) or temporarily unavailable/overloaded (5xx).
  */
 async function createChatStream(
   client: OpenAI,
@@ -78,12 +83,16 @@ async function createChatStream(
       )
     } catch (err) {
       lastErr = err
-      const status = (err as { status?: number })?.status
+      const status = (err as { status?: number })?.status ?? 0
+      // Only a daily rate limit (429) warrants the long cooldown; a 5xx is
+      // transient, so we fall back for this request but keep re-trying the primary.
       if (status === 429 && model === primary && fallback) {
         primaryCooldownUntil = Date.now() + PRIMARY_COOLDOWN_MS
-        console.warn(`Primary model "${primary}" rate-limited — falling back to "${fallback}".`)
       }
-      if (status === 429 && !isLast) continue // try the next (lighter) model
+      if (FALLBACKABLE.has(status) && !isLast) {
+        console.warn(`Model "${model}" unavailable (${status}) — falling back to "${order[i + 1]}".`)
+        continue
+      }
       throw err
     }
   }
