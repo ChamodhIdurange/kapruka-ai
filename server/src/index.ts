@@ -175,12 +175,19 @@ app.post('/api/chat', asyncRoute(async (req, res) => {
   }
 }))
 
-app.listen(config.port, async () => {
-  console.log(`Kapruka concierge server listening on http://localhost:${config.port}`)
-  try {
-    const tools = await listMcpTools()
-    console.log(`Connected to Kapruka MCP — ${tools.length} tools available.`)
-  } catch (err) {
-    console.warn('Warning: could not reach Kapruka MCP yet:', err instanceof Error ? err.message : err)
-  }
-})
+// Only run a long-lived listener for local dev. On Vercel (serverless) the app
+// is imported and invoked per-request via api/index.ts, so we must not listen.
+if (!process.env.VERCEL) {
+  app.listen(config.port, async () => {
+    console.log(`Kapruka concierge server listening on http://localhost:${config.port}`)
+    try {
+      const tools = await listMcpTools()
+      console.log(`Connected to Kapruka MCP — ${tools.length} tools available.`)
+    } catch (err) {
+      console.warn('Warning: could not reach Kapruka MCP yet:', err instanceof Error ? err.message : err)
+    }
+  })
+}
+
+// Exported so a Vercel serverless function (api/index.ts) can serve it.
+export default app
