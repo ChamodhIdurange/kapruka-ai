@@ -10,7 +10,7 @@ function renderTitle(tpl: string): ReactNode {
     const parts = line.split(/(\{hl\}.*?\{\/hl\})/g).map((seg, si) => {
       const m = /^\{hl\}(.*?)\{\/hl\}$/.exec(seg)
       return m
-        ? <span key={si} style={{ background: 'var(--grad-text)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{m[1]}</span>
+        ? <span key={si} className="kp-grad-text">{m[1]}</span>
         : <span key={si}>{seg}</span>
     })
     return <span key={li}>{li > 0 && <br />}{parts}</span>
@@ -30,8 +30,10 @@ export default function Hero({ actions }: { actions: ConciergeActions }) {
   return (
     <div className="kp-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 28px' }}>
       <div style={{ position: 'absolute', top: '14%', left: '50%', transform: 'translateX(-50%)', width: '88%', maxWidth: 520, height: 340, background: 'var(--hero-glow)', filter: 'blur(8px)', animation: 'kpGlow 6s ease-in-out infinite', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '18%', left: '14%', width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(34,197,140,.28), transparent)', filter: 'blur(30px)', animation: 'kpBlob1 11s ease-in-out infinite', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '14%', right: '12%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(228,178,62,.26), transparent)', filter: 'blur(32px)', animation: 'kpBlob2 13s ease-in-out infinite', pointerEvents: 'none' }} />
       <div style={{ position: 'relative', maxWidth: 680, width: '100%', textAlign: 'center' }}>
-        <div style={{ width: 78, height: 78, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 26px', boxShadow: '0 10px 30px rgba(0,0,0,.18)', animation: 'kpFloat 5s ease-in-out infinite' }}>
+        <div style={{ width: 78, height: 78, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 26px', boxShadow: 'var(--shadow-primary)', animation: 'kpFloat 5s ease-in-out infinite' }}>
           <Sprout size={38} stroke="#fff" />
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--ink-2)', marginBottom: 14 }}>
@@ -45,8 +47,8 @@ export default function Hero({ actions }: { actions: ConciergeActions }) {
           {t('heroSub')}
         </p>
         <Hov as="button" onClick={() => actions.heroSend('Help me choose a gift — what do you need to know?')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'var(--primary)', color: 'var(--on-primary)', border: 'none', borderRadius: 999, padding: '14px 26px', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 8px 22px rgba(0,0,0,.16)', marginBottom: 26 }}
-          hoverStyle={{ background: 'var(--primary-hover)' }}>
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'var(--grad)', color: 'var(--on-primary)', border: 'none', borderRadius: 999, padding: '14px 26px', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: 'var(--shadow-primary)', marginBottom: 26 }}
+          hoverStyle={{ filter: 'brightness(1.06)', transform: 'translateY(-1px)' }}>
           <Wand size={18} />
           {t('heroChoose')}
         </Hov>

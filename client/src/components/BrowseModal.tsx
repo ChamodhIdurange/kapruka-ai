@@ -79,8 +79,8 @@ export default function BrowseModal({ chat, query, cat, price, sort, favorites, 
   )
 
   return (
-    <div onClick={actions.closeBrowse} style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(31,26,48,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28, animation: 'kpIn .2s ease both' }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(1060px,96vw)', height: 'min(86vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 70px rgba(31,26,48,.45)' }}>
+    <div onClick={actions.closeBrowse} className="kp-glass" style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'var(--scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28, animation: 'kpIn .2s ease both' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(1060px,96vw)', height: 'min(86vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
         <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 14, padding: '15px 18px', borderBottom: '1px solid var(--line-2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
             <div style={{ width: 34, height: 34, borderRadius: 10, background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -154,7 +154,7 @@ function BrowseCard({ p, isFav, inCart, onAdd, onFav }: { p: Product; isFav: boo
       <div style={{ position: 'relative' }}>
         <ProductImage product={p} height={108} glyphWrap={52} />
         {p.tag && (
-          <div style={{ position: 'absolute', top: 9, left: 9, background: '#241B3D', color: '#fff', fontSize: 9.5, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', padding: '3px 7px', borderRadius: 999 }}>{p.tag}</div>
+          <div style={{ position: 'absolute', top: 9, left: 9, background: '#0F2A1F', color: '#fff', fontSize: 9.5, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', padding: '3px 7px', borderRadius: 999 }}>{p.tag}</div>
         )}
         <button type="button" onClick={onFav} style={{ position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,.16)' }}>
           {isFav

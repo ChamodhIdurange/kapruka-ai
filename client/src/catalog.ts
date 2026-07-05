@@ -1,19 +1,19 @@
-// Sidebar / chat-icon gradient tones.
+// Sidebar / chat-icon gradient tones (emerald & gold family).
 export const TONES = [
-  'linear-gradient(140deg,#9D7BFF,#6E4AE0)',
-  'linear-gradient(140deg,#C084FC,#9333EA)',
-  'linear-gradient(140deg,#7C5CFC,#4F2CC0)',
-  'linear-gradient(140deg,#B794F6,#7C3AED)',
+  'linear-gradient(140deg,#22C58C,#0B8A5F)',
+  'linear-gradient(140deg,#F3D07A,#E0A62E)',
+  'linear-gradient(140deg,#34D399,#0E9F6E)',
+  'linear-gradient(140deg,#5FD3B4,#0B7A6A)',
 ]
 
 // Product-tile background gradients, used as image placeholders / fallbacks.
 export const TILE_BGS = [
-  'linear-gradient(140deg,#FCE3C2,#F4B07E)',
-  'linear-gradient(140deg,#F7D6E6,#E29ECB)',
-  'linear-gradient(140deg,#E9D6F2,#B98AD9)',
-  'linear-gradient(140deg,#D8EFD0,#A6D596)',
-  'linear-gradient(140deg,#F6C6C9,#E0727E)',
-  'linear-gradient(140deg,#E7C7A0,#B5854F)',
+  'linear-gradient(140deg,#FCE7B8,#F0BF6A)',
+  'linear-gradient(140deg,#CFF0DE,#7CCBA8)',
+  'linear-gradient(140deg,#D8EFD0,#9FD59A)',
+  'linear-gradient(140deg,#F7E2C0,#E2B06F)',
+  'linear-gradient(140deg,#BFEBD8,#5FB893)',
+  'linear-gradient(140deg,#EADFC0,#C7A25E)',
 ]
 
 /** Deterministic placeholder gradient for a product id. */

@@ -3,8 +3,9 @@ import cors from 'cors'
 import { config } from './config.js'
 import { callMcpTool, listMcpTools } from './mcp.js'
 import { runAgent } from './agent.js'
+import { searchProducts } from './tools.js'
 import {
-  extractNextCursor, extractProducts, mapCategories, mapCheckDelivery,
+  extractProducts, mapCategories, mapCheckDelivery,
   mapCities, mapOrderResult, mapTrackOrder,
 } from './mappers.js'
 import type { ChatEvent, ChatMessage } from './types.js'
@@ -52,8 +53,10 @@ app.get('/api/search', asyncRoute(async (req, res) => {
   if (req.query.sort) args.sort = String(req.query.sort)
   if (req.query.in_stock_only != null) args.in_stock_only = req.query.in_stock_only === 'true'
 
-  const raw = await callMcpTool('kapruka_search_products', args)
-  res.json({ items: extractProducts(raw, currency), nextCursor: extractNextCursor(raw) })
+  // searchProducts applies the price budget in the display currency (the MCP
+  // filters in LKR), so the browse-modal price chips work correctly.
+  const { products, nextCursor } = await searchProducts(args, currency)
+  res.json({ items: products, nextCursor })
 }))
 
 // ── Product detail ───────────────────────────────────────

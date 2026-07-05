@@ -25,9 +25,9 @@ export default function Header({ lang, theme, cartCount, actions }: Props) {
   )
 
   return (
-    <div style={{ flex: 'none', height: 60, borderBottom: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px', zIndex: 5 }}>
+    <div className="kp-glass" style={{ flex: 'none', height: 60, borderBottom: '1px solid var(--line)', background: 'var(--glass-bg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px', zIndex: 5 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-        <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-.01em' }}>KAI</span>
+        <span className="kp-grad-text" style={{ fontSize: 16, fontWeight: 800, letterSpacing: '.02em' }}>KAI</span>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600, color: 'var(--muted)', background: 'var(--soft)', padding: '3px 9px', borderRadius: 999 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#37b24d' }} />{t('conciergeStatus')}
         </span>

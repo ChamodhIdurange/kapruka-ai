@@ -23,7 +23,7 @@ export default function App() {
     <div
       data-screen-label="KAI Concierge"
       data-theme={state.theme}
-      style={{ position: 'relative', height: '100vh', width: '100%', overflow: 'hidden', display: 'flex', background: 'var(--bg)', color: 'var(--ink)', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
+      style={{ position: 'relative', height: '100vh', width: '100%', overflow: 'hidden', display: 'flex', background: 'var(--app-bg)', color: 'var(--ink)', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       <Sidebar
         chats={chats}

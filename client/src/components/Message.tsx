@@ -96,8 +96,8 @@ export default function Message({ m, favorites, cartQty, actions }: Props) {
               </div>
               {m.order.payUrl ? (
                 <Hov as="button" onClick={() => window.open(m.order!.payUrl as string, '_blank', 'noopener')}
-                  style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 4px 14px rgba(110,74,224,.28)' }}
-                  hoverStyle={{ background: 'var(--accent-hover)' }}>
+                  style={{ background: 'var(--grad-gold)', color: 'var(--on-accent)', border: 'none', borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', boxShadow: 'var(--shadow-gold)' }}
+                  hoverStyle={{ filter: 'brightness(1.05)' }}>
                   Pay now on Kapruka →
                 </Hov>
               ) : (

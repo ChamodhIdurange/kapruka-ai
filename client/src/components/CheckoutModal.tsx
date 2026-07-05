@@ -29,10 +29,10 @@ export default function CheckoutModal({ chat, actions }: { chat: Chat; actions: 
   const stepIndex = STEPS.findIndex((s) => s.key === step)
 
   return (
-    <div onClick={actions.closeCheckout}
-      style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(31,26,48,.55)', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, animation: 'kpIn .2s ease both' }}>
+    <div onClick={actions.closeCheckout} className="kp-glass"
+      style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, animation: 'kpIn .2s ease both' }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ width: 'min(560px,96vw)', maxHeight: 'min(90vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 30px 80px rgba(31,26,48,.5)' }}>
+        style={{ width: 'min(560px,96vw)', maxHeight: 'min(90vh,760px)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 22, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-lg)' }}>
 
         {/* header */}
         <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 12, padding: '18px 20px 16px', borderBottom: '1px solid var(--line-2)' }}>
@@ -116,8 +116,8 @@ export default function CheckoutModal({ chat, actions }: { chat: Chat; actions: 
             )}
             {step === 'review' && (
               <Hov as="button" onClick={() => { if (!chat.placing) actions.placeOrder() }}
-                style={{ ...primaryBtn, background: 'var(--accent)', opacity: chat.placing ? 0.7 : 1, cursor: chat.placing ? 'default' : 'pointer' }}
-                hoverStyle={chat.placing ? {} : { background: 'var(--accent-hover)' }}>
+                style={{ ...primaryBtn, background: 'var(--grad-gold)', color: 'var(--on-accent)', boxShadow: 'var(--shadow-gold)', opacity: chat.placing ? 0.7 : 1, cursor: chat.placing ? 'default' : 'pointer' }}
+                hoverStyle={chat.placing ? {} : { filter: 'brightness(1.05)' }}>
                 {chat.placing ? t('placing') : t('placeOrder', { total: totalText })}
               </Hov>
             )}
@@ -133,9 +133,9 @@ function GiftStep({ chat, actions }: { chat: Chat; actions: ConciergeActions }) 
   const t = useT()
   const id = chat.id
   const cards: { key: GiftCard; labelKey: TKey; bg: string; color: string }[] = [
-    { key: 'classic', labelKey: 'cardClassic', bg: 'linear-gradient(135deg,#F1ECFB,#E0D6F6)', color: '#343a40' },
+    { key: 'classic', labelKey: 'cardClassic', bg: 'linear-gradient(135deg,#FBF3DE,#F0DFB0)', color: '#5C4B12' },
     { key: 'floral', labelKey: 'cardFloral', bg: 'linear-gradient(135deg,#F7D6E6,#E29ECB)', color: '#fff' },
-    { key: 'modern', labelKey: 'cardModern', bg: 'linear-gradient(135deg,#6E4AE0,#3B1E8F)', color: '#fff' },
+    { key: 'modern', labelKey: 'cardModern', bg: 'linear-gradient(135deg,#12B884,#0A5A3E)', color: '#fff' },
   ]
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -156,7 +156,7 @@ function GiftStep({ chat, actions }: { chat: Chat; actions: ConciergeActions }) 
           const selected = chat.giftCard === c.key
           return (
             <div key={c.key} onClick={() => actions.patch(id, { giftCard: c.key })}
-              style={{ flex: 1, height: 60, borderRadius: 12, background: c.bg, border: `2px solid ${selected ? 'var(--primary)' : 'transparent'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 700, color: c.color, cursor: 'pointer', boxShadow: selected ? '0 4px 14px rgba(110,74,224,.25)' : 'none', transition: 'all .15s ease' }}>
+              style={{ flex: 1, height: 60, borderRadius: 12, background: c.bg, border: `2px solid ${selected ? 'var(--primary)' : 'transparent'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 700, color: c.color, cursor: 'pointer', boxShadow: selected ? '0 4px 14px rgba(14,159,110,.28)' : 'none', transition: 'all .15s ease' }}>
               {t(c.labelKey)}
             </div>
           )
@@ -350,8 +350,8 @@ function DoneStep({ chat, actions }: { chat: Chat; actions: ConciergeActions }) 
 
       {order?.payUrl ? (
         <Hov as="button" onClick={() => window.open(order.payUrl as string, '_blank', 'noopener')}
-          style={{ ...primaryBtn, width: '100%', maxWidth: 420, background: 'var(--accent)' }}
-          hoverStyle={{ background: 'var(--accent-hover)' }}>{t('payNow')}</Hov>
+          style={{ ...primaryBtn, width: '100%', maxWidth: 420, background: 'var(--grad-gold)', color: 'var(--on-accent)', boxShadow: 'var(--shadow-gold)' }}
+          hoverStyle={{ filter: 'brightness(1.05)' }}>{t('payNow')}</Hov>
       ) : (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--soft)', border: '1px solid var(--soft-border)', borderRadius: 11, padding: '11px 14px', fontSize: 12.5, color: 'var(--muted)' }}>
           <Clock size={15} stroke="var(--muted)" />{t('payLinkEmail')}

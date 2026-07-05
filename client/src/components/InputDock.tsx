@@ -19,7 +19,7 @@ export default function InputDock({ draft, suggestions, quickReplies, showChips,
     : s.action === 'checkout' ? t('sgProceedCheckout')
     : s.label
   return (
-    <div style={{ flex: 'none', borderTop: '1px solid var(--line)', background: 'var(--surface)', padding: '14px 28px 18px' }}>
+    <div className="kp-glass" style={{ flex: 'none', borderTop: '1px solid var(--line)', background: 'var(--glass-bg)', padding: '14px 28px 18px' }}>
       <div style={{ maxWidth: 780, margin: '0 auto' }}>
         {quickReplies.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
@@ -43,7 +43,7 @@ export default function InputDock({ draft, suggestions, quickReplies, showChips,
             ))}
           </div>
         )}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 999, padding: 6 }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 999, padding: 6, boxShadow: 'var(--shadow-sm)' }}>
           <Hov as="button" onClick={actions.openBrowse} title="Browse the shop"
             style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
             hoverStyle={{ color: 'var(--primary)', borderColor: 'var(--soft-border)' }}>
@@ -55,8 +55,8 @@ export default function InputDock({ draft, suggestions, quickReplies, showChips,
             placeholder={t('askPlaceholder')}
             style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 15, color: 'var(--ink)', fontFamily: 'inherit', paddingLeft: 4 }} />
           <Hov as="button" onClick={actions.onSend}
-            style={{ flex: 'none', width: 42, height: 42, borderRadius: '50%', border: 'none', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-            hoverStyle={{ background: 'var(--primary-hover)' }}>
+            style={{ flex: 'none', width: 42, height: 42, borderRadius: '50%', border: 'none', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: 'var(--shadow-primary)' }}
+            hoverStyle={{ filter: 'brightness(1.06)' }}>
             <Send size={19} stroke="var(--on-primary)" />
           </Hov>
         </div>

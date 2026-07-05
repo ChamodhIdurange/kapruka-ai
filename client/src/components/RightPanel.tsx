@@ -113,8 +113,8 @@ export default function RightPanel({ chat, activeTab, saved, actions }: Props) {
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--muted-2)', marginBottom: 13 }}>{t('plusDelivery')}</div>
                   <Hov as="button" onClick={() => actions.act('checkout')}
-                    style={{ width: '100%', background: 'var(--primary)', color: 'var(--on-primary)', border: 'none', borderRadius: 11, padding: '13px 0', fontSize: 14.5, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
-                    hoverStyle={{ background: 'var(--primary-hover)' }}>{t('proceedToCheckout')}</Hov>
+                    style={{ width: '100%', background: 'var(--grad)', color: 'var(--on-primary)', border: 'none', borderRadius: 11, padding: '13px 0', fontSize: 14.5, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', boxShadow: 'var(--shadow-primary)' }}
+                    hoverStyle={{ filter: 'brightness(1.06)' }}>{t('proceedToCheckout')}</Hov>
                 </div>
               )}
             </div>
@@ -179,8 +179,8 @@ function Tracking({ chat, actions }: { chat: Chat; actions: ConciergeActions }) 
 
       {order?.payUrl && (
         <Hov as="button" onClick={() => window.open(order.payUrl as string, '_blank', 'noopener')}
-          style={{ width: '100%', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 0', fontSize: 13.5, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 16 }}
-          hoverStyle={{ background: 'var(--accent-hover)' }}>{t('payNow')}</Hov>
+          style={{ width: '100%', background: 'var(--grad-gold)', color: 'var(--on-accent)', border: 'none', borderRadius: 10, padding: '11px 0', fontSize: 13.5, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 16, boxShadow: 'var(--shadow-gold)' }}
+          hoverStyle={{ filter: 'brightness(1.05)' }}>{t('payNow')}</Hov>
       )}
 
       {/* Live tracking by Kapruka order number */}

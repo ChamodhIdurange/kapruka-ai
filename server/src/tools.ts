@@ -123,6 +123,50 @@ function simplifyQuery(q: string): string {
   return words.slice(0, 2).join(' ')
 }
 
+const numOrUndef = (v: unknown): number | undefined =>
+  typeof v === 'number' && !Number.isNaN(v) ? v : undefined
+
+/**
+ * Search products and apply a price budget IN THE DISPLAY CURRENCY.
+ * Kapruka's own min_price/max_price filter operates in LKR regardless of the
+ * `currency` param, so a "$30" budget would be read as 30 LKR and match nothing.
+ * We therefore strip the bounds from the MCP call, fetch a wide page, and filter
+ * by the displayed price ourselves.
+ */
+export async function searchProducts(
+  args: Record<string, unknown>,
+  currency: string,
+): Promise<{ products: ProductVM[]; nextCursor: string | null }> {
+  const min = numOrUndef(args.min_price)
+  const max = numOrUndef(args.max_price)
+  const hasBounds = min !== undefined || max !== undefined
+  const wantLimit = Math.min(Number(args.limit ?? 10) || 10, 50)
+
+  const mcpArgs: Record<string, unknown> = { ...args, currency }
+  delete mcpArgs.min_price
+  delete mcpArgs.max_price
+  if (hasBounds) mcpArgs.limit = 50 // fetch wide, then filter by displayed price
+
+  let raw = await callMcpTool('kapruka_search_products', mcpArgs)
+  let products = extractProducts(raw, currency)
+
+  // Keyword-simplify fallback if a literal query matched nothing.
+  if (products.length === 0 && typeof args.q === 'string') {
+    const simpler = simplifyQuery(args.q)
+    raw = await callMcpTool('kapruka_search_products', { q: simpler || args.q, currency, limit: hasBounds ? 50 : wantLimit })
+    products = extractProducts(raw, currency)
+  }
+
+  if (hasBounds) {
+    products = products.filter(
+      (p) => p.priceAmount != null && (min === undefined || p.priceAmount >= min) && (max === undefined || p.priceAmount <= max),
+    )
+  }
+
+  const nextCursor = raw && typeof raw === 'object' ? ((raw as Record<string, unknown>).next_cursor as string) ?? null : null
+  return { products: products.slice(0, wantLimit), nextCursor }
+}
+
 /** Execute one agent tool call against the MCP server. */
 export async function dispatchTool(
   name: string,
@@ -136,43 +180,37 @@ export async function dispatchTool(
   if (!AGENT_TOOLS.has(name)) {
     return { result: { error: `Tool ${name} is not available to the assistant.` } }
   }
-  // Force the display currency so the model's price filters (min/max) are
-  // interpreted in the same currency as the prices we show — otherwise a "$30"
-  // budget gets read as 30 LKR and filters out everything.
-  if (PRODUCT_TOOLS.has(name)) args = { ...args, currency }
-
-  let raw = await callMcpTool(name, args)
-
-  if (PRODUCT_TOOLS.has(name)) {
-    let products = extractProducts(raw, currency)
-
-    // Fallback: retry once with a simplified keyword query and no filters.
-    if (products.length === 0 && name === 'kapruka_search_products' && typeof args.q === 'string') {
-      const simpler = simplifyQuery(args.q)
-      raw = await callMcpTool(name, { q: simpler || args.q, currency, limit: args.limit ?? 8 })
-      products = extractProducts(raw, currency)
-    }
-
-    const nextCursor =
-      raw && typeof raw === 'object' ? (raw as Record<string, unknown>).next_cursor : undefined
+  if (name === 'kapruka_search_products') {
+    const { products, nextCursor } = await searchProducts(args, currency)
+    const hasBounds = numOrUndef(args.min_price) !== undefined || numOrUndef(args.max_price) !== undefined
     return {
       products,
       result: {
         count: products.length,
         products: products.map(compactProduct),
-        next_cursor: nextCursor ?? null,
-        note: products.length === 0 ? 'No matches — try a simpler one-word query like "cake" or "roses".' : undefined,
+        next_cursor: nextCursor,
+        note: products.length === 0
+          ? (hasBounds ? 'No in-budget matches — suggest a higher budget or a different gift type.' : 'No matches — try a simpler one-word query like "cake" or "roses".')
+          : undefined,
       },
     }
   }
 
+  if (name === 'kapruka_get_product') {
+    const raw = await callMcpTool(name, { ...args, currency })
+    const products = extractProducts(raw, currency)
+    return { products, result: { count: products.length, products: products.map(compactProduct) } }
+  }
+
   if (name === 'kapruka_list_categories') {
+    const raw = await callMcpTool(name, args)
     const categories = mapCategories(raw)
     // Give the model NAMES ONLY — never the URLs (so it can't paste a link dump).
     return { categories, result: { count: categories.length, categories: categories.map((c) => c.name) } }
   }
 
-  return { result: raw }
+  // list_delivery_cities, check_delivery, track_order — pass raw JSON to the model.
+  return { result: await callMcpTool(name, args) }
 }
 
 const FRIENDLY: Record<string, string> = {
