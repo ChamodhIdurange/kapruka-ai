@@ -10,9 +10,11 @@ export const config = {
   defaultCurrency: process.env.DEFAULT_CURRENCY ?? 'USD',
   google: {
     apiKey: process.env.GOOGLE_API_KEY ?? process.env.GEMINI_API_KEY ?? '',
-    // Any Gemini model with function-calling support (e.g. gemini-2.5-flash,
-    // gemini-2.5-pro, gemini-2.0-flash).
+    // Primary model. The server automatically falls back to `fallbackModel`
+    // when the primary is rate-limited (the free tier for gemini-2.5-flash is
+    // only ~20 requests/day; gemini-2.5-flash-lite allows ~1000/day).
     model: process.env.GOOGLE_MODEL ?? 'gemini-2.5-flash',
+    fallbackModel: process.env.GOOGLE_FALLBACK_MODEL ?? 'gemini-2.5-flash-lite',
     // Google AI Studio's OpenAI-compatibility endpoint.
     baseUrl: process.env.GOOGLE_BASE_URL ?? 'https://generativelanguage.googleapis.com/v1beta/openai/',
   },

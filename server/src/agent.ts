@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import type {
   ChatCompletionMessageParam,
   ChatCompletionMessageToolCall,
+  ChatCompletionTool,
 } from 'openai/resources/index'
 import { config, assertGoogleConfigured } from './config.js'
 import { buildAgentTools, dispatchTool, friendlyToolLabel } from './tools.js'
@@ -44,6 +45,51 @@ function getClient(): OpenAI {
 
 const MAX_ITERATIONS = 8
 
+// After the primary model is rate-limited, prefer the fallback for a while so we
+// don't waste a failing request on every turn (the free daily quota won't recover
+// for hours anyway). The primary is re-probed once the cooldown lapses.
+const PRIMARY_COOLDOWN_MS = 20 * 60_000
+let primaryCooldownUntil = 0
+
+/**
+ * Open a streaming chat completion, trying the primary model first and
+ * automatically falling back to the lighter model on a 429 (rate limit).
+ */
+async function createChatStream(
+  client: OpenAI,
+  messages: ChatCompletionMessageParam[],
+  tools: ChatCompletionTool[],
+) {
+  const primary = config.google.model
+  const fallback = config.google.fallbackModel
+  // Skip the primary while it's cooling down; otherwise try it first.
+  const skipPrimary = fallback && Date.now() < primaryCooldownUntil
+  const order = [...new Set([skipPrimary ? fallback : primary, fallback].filter(Boolean))] as string[]
+
+  let lastErr: unknown
+  for (let i = 0; i < order.length; i++) {
+    const model = order[i]
+    const isLast = i === order.length - 1
+    try {
+      return await client.chat.completions.create(
+        { model, messages, tools, tool_choice: 'auto', stream: true },
+        // Fail fast on the primary so we fall back quickly; let the last model retry.
+        { maxRetries: isLast ? 3 : 0 },
+      )
+    } catch (err) {
+      lastErr = err
+      const status = (err as { status?: number })?.status
+      if (status === 429 && model === primary && fallback) {
+        primaryCooldownUntil = Date.now() + PRIMARY_COOLDOWN_MS
+        console.warn(`Primary model "${primary}" rate-limited — falling back to "${fallback}".`)
+      }
+      if (status === 429 && !isLast) continue // try the next (lighter) model
+      throw err
+    }
+  }
+  throw lastErr
+}
+
 /**
  * Run the KAI agent over the conversation `history`, streaming events via `emit`.
  * Resolves when the assistant has produced its final (tool-free) turn.
@@ -83,13 +129,7 @@ export async function runAgent(
   }
 
   for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
-    const stream = await client.chat.completions.create({
-      model: config.google.model,
-      messages,
-      tools,
-      tool_choice: 'auto',
-      stream: true,
-    })
+    const stream = await createChatStream(client, messages, tools)
 
     let textBuf = ''
     const toolAcc: Record<number, { id: string; name: string; args: string }> = {}
